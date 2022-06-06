@@ -52,16 +52,6 @@
       </div>
       {% endif %}
       <div class="product-form">
-        <!--         <form action="">
-
-<div class="form-group">
-<div class="quantity-wrap">
-<label for="quantity">Quantity</label>
-<input type="number" class="sn-form-control" name="quantity" id="quantity" placeholder="1" value="1" min="1">
-</div>
-<button type="submit" class="sn-btn">Order Now</button>
-</div>
-</form> -->
 
         <form action="/cart/add" method="post">
           {% if product.variants.size > 1 and block.settings.colors == 'no' %}
@@ -198,8 +188,6 @@
     </div>
   </div>
 </section>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
 {% if block.settings.colors == 'yes' %}
 <script>
