@@ -1,0 +1,432 @@
+{% for block in section.blocks %}
+{% if product.handle == block.settings.handle %}
+
+
+{% assign current_variant= product.selected_or_first_available_variant %}
+
+<section id="sn-product">
+  <div class="sn-container">
+    <div class="sn-gallery">
+      <div class="sn-product-images">
+        {% for image in product.images %}
+        <img src="{{image | img_url:'560x'}}" alt="" class="sn-img">
+        {% endfor %}        
+      </div>
+      <div class="sn-product-thumbs">
+        {% for image in product.images %}
+        <img src="{{image | img_url:'92x'}}" alt="" class="sn-img">
+        {% endfor %}        
+      </div>
+    </div>
+    <div class="sn-desc">
+      <div class="sn-rating">        
+        <div class="sn-stars">
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          {% if block.settings.stars == 'five' %}
+          <i class="fa-solid fa-star"></i>          
+          {% elsif block.settings.stars == 'fourHalf' %}
+          <i class="fa-solid fa-star-half-stroke"></i>
+          {% elsif block.settings.stars == 'four' %}
+          <i class="fa-regular fa-star"></i>
+          {% endif %}
+        </div>
+        {% if block.settings.rating != '' %}
+        <span>{{block.settings.rating}}</span>
+        {% endif %}
+      </div>
+      <h1>{{product.title}}</h1>
+      <div class="sn-price">
+        <div id="price">{{current_variant.price | money}}</div>
+        <div id="old-price">{{current_variant.compare_at_price | money}}</div>
+      </div>
+      {% if block.settings.shipping != '' %}
+      <div class="small-notice">{{block.settings.shipping}}</div>
+      {% endif %}
+
+      {% if block.settings.desc != '' %}
+      <div class="product-desc">
+        <p>{{block.settings.desc}}</p>
+      </div>
+      {% endif %}
+      <div class="product-form">
+        <!--         <form action="">
+
+<div class="form-group">
+<div class="quantity-wrap">
+<label for="quantity">Quantity</label>
+<input type="number" class="sn-form-control" name="quantity" id="quantity" placeholder="1" value="1" min="1">
+</div>
+<button type="submit" class="sn-btn">Order Now</button>
+</div>
+</form> -->
+
+        <form action="/cart/add" method="post">
+          {% if product.variants.size > 1 and block.settings.colors == 'no' %}
+          {% if product.options[0] %}
+          <div class="sn-form-group">
+            <label for="select-one">{{ product.options[0] }}</label>
+            <select id="select-one" onchange="letsDoThis()">
+              {% for value in product.options_with_values[0].values %}
+              <option value="{{ value }}" {% if product.options_with_values[0].selected_value == value %}selected{% endif %}>
+                {{ value }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+          {% if product.options[1] %}
+          <div class="sn-form-group">
+            <label for="select-two">{{ product.options[1] }}</label>
+            <select id="select-two" onchange="letsDoThis()">
+              {% for value in product.options_with_values[1].values %}
+              <option value="{{ value }}" {% if product.options_with_values[1].selected_value == value %}selected{% endif %}>
+                {{ value }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+          {% if product.options[2] %}
+          <div class="sn-form-group">
+            <label for="select-three">{{ product.options[2] }}</label>
+            <select id="select-three" onchange="letsDoThis()">
+              {% for value in product.options_with_values[2].values %}
+              <option value="{{ value }}" {% if product.options_with_values[2].selected_value == value %}selected{% endif %}>
+                {{ value }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+          {% endif %}
+          
+          {% if block.settings.colors == 'yes' and product.variants[forloop.index0].metafields.sn-color.value %}        
+
+          <div class="form-group">
+            <label for="colors">Select color: <span id="selected-color">{{current_variant.title}}</span></label>            
+          </div>          
+          <div class="color-slider">
+            {% for variant in product.variants %}
+            {% if variant.available %}                        
+            <span>
+              <input type="radio" name="id" value="{{ variant.id }}" id="{{ variant.id }}" class="radio-btn" />          
+              <label for="{{ variant.id }}" class="radio-label" style="background-color:{{variant.metafields.sn-color.value}}">
+                &nbsp;
+              </label>
+            </span>
+            {% else %}
+            <span>
+            <input type="radio" name="id" value="{{ variant.id }}" id="{{ variant.id }}" disabled="disabled" class="radio-btn" />          
+              <label for="{{ variant.id }}" class="radio-label" style="background-color:{{variant.metafields.sn-color.value}}">
+                N/A
+              </label>
+            </span>
+            {% endif %}
+            {% endfor %}
+          </div>          
+          
+          {% endif %}          
+
+          <select name="id" id="product-select" class="sn-hidden">
+            {% for variant in product.variants %}
+            <option
+                    {% if variant == current_variant %}selected="selected"{% endif %}
+                    {% unless variant.available %}disabled="disabled"{% endunless %}
+                    value="{{ variant.id }}">
+              {{ variant.title }}
+            </option>
+            {% endfor %}
+          </select>
+          
+          <div class="form-group">
+            <div class="quantity-wrap">
+              <label for="quantity">Quantity</label>
+              <input type="number" class="sn-form-control" name="quantity" id="quantity" placeholder="1" value="1" min="1">
+            </div>
+            <button type="submit" class="sn-btn"id="submit-btn">Order Now</button>
+          </div>
+        </form>
+
+
+      </div>
+      <div class="product-features">        
+        {% if block.settings.title1 !='' %}
+        <button class="collapsible">{{block.settings.title1}}</button>
+        <div class="content">
+          {{block.settings.text1}}
+        </div>
+        {% endif %}
+
+        {% if block.settings.title2 !='' %}
+        <button class="collapsible">{{block.settings.title2}}</button>
+        <div class="content">
+          {{block.settings.text2}}
+        </div>
+        {% endif %}
+
+        {% if block.settings.title3 !='' %}
+        <button class="collapsible">{{block.settings.title3}}</button>
+        <div class="content">
+          {{block.settings.text3}}
+        </div>
+        {% endif %}
+
+        {% if block.settings.title4 !='' %}
+        <button class="collapsible">{{block.settings.title4}}</button>
+        <div class="content">
+          {{block.settings.text4}}
+        </div>
+        {% endif %}
+
+        {% if block.settings.title5 !='' %}
+        <button class="collapsible">{{block.settings.title5}}</button>
+        <div class="content">
+          {{block.settings.text5}}
+        </div>
+        {% endif %}
+
+        {% if block.settings.title6 !='' %}
+        <button class="collapsible">{{block.settings.title6}}</button>
+        <div class="content">
+          {{block.settings.text6}}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+{% if block.settings.colors == 'yes' %}
+<script>
+  
+  $('label').click(function() { 
+
+    var color = $(this).attr('for');
+    var vid ='';    
+    
+    {% for variant in product.variants %}  
+    {% if variant.available %}
+    if (color == {{variant.id}}){
+        var vid = {{variant.id}};
+        var variantImagePos = "{{ variant.featured_image.position | minus: 1}}";
+        var title = "{{ variant.title }}";
+    }
+    {% endif %}
+    {% endfor %}
+    
+    if(vid == color){
+      
+	document.getElementById('product-select').value = color;
+    $('.sn-product-images').slick('slickGoTo', variantImagePos); 
+    document.getElementById('selected-color').innerHTML = title;
+    history.pushState(null, null, '/products/{{ product.handle }}?variant=' + color);
+    document.getElementById('submit-btn').innerHTML = "Order Now";
+    document.getElementById('submit-btn').removeAttribute("disabled", "");
+    }
+    if (vid == ''){
+    document.getElementById('submit-btn').innerHTML = "Unavailable";
+    $('.sn-product-images').slick('slickGoTo', variantImagePos); 
+    document.getElementById('selected-color').innerHTML = 'Unavailable';
+    document.getElementById('submit-btn').setAttribute("disabled", "");
+    });
+                      
+</script>
+
+{% elsif block.settings.colors == 'no' %}
+
+<script>
+	function letsDoThis() {
+		{% if product.options[0] %}var opt1 = document.getElementById('select-one').value;{% endif %}
+		{% if product.options[1] %}var opt2 = document.getElementById('select-two').value;{% endif %}
+		{% if product.options[2] %}var opt3 = document.getElementById('select-three').value;{% endif %}
+		var id = '';
+		{% for v in product.variants %}
+		if(opt1=="{{ v.option1 }}"{% if product.options[1] %} && opt2=="{{ v.option2 }}"{% endif %}{% if product.options[2] %} && opt3=="{{ v.option3 }}"{% endif %}) {
+				var id = {{ v.id }};
+				var price = "{{ v.price | money }}";
+                var oldPrice = "{{ v.compare_at_price | money }}";
+                var variantImagePos = "{{ v.featured_image.position}}";
+                var savings = "Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%"
+			}
+		{% endfor %}
+		if (id == '') {
+			// Variant Not Found / Unavailable
+			document.getElementById('product-select').value = '';
+          	document.getElementById('comp-price').innerHTML = 'Unavailable';
+			document.getElementById('price').innerHTML = 'Unavailable';
+			history.pushState(null, null, '/products/{{ product.handle }}');
+                              $('.sn-product-images').slick('slickGoTo', variantImagePos);          
+			// Disable Add To Cart Button Here
+		} else if ($('#product-select option[value="' + id + '"]').prop('disabled') == true) {
+			// Sold Out
+			document.getElementById('product-select').value = id;
+			document.getElementById('price').innerHTML = 'Sold Out';
+            document.getElementById('comp-price').innerHTML = 'Sold Out';
+			history.pushState(null, null, '/products/{{ product.handle }}?variant=' + id);
+                              $('.sn-product-images').slick('slickGoTo', variantImagePos);
+			// Disable Add To Cart Button Here			
+		} else {
+			document.getElementById('product-select').value = id;
+			document.getElementById('price').innerHTML = price;
+            document.getElementById('comp-price').innerHTML = oldPrice;              	
+			history.pushState(null, null, '/products/{{ product.handle }}?variant=' + id);
+                              $('.sn-product-images').slick('slickGoTo', variantImagePos);
+			// Enable Add To Cart Button Here
+		}		
+	}
+                              
+</script>
+
+{% endif %}
+
+{% endif %}
+{% endfor %}
+
+{% schema %}
+  {
+    "name": "Product (Custom)",
+    "settings": [],
+	"blocks":[
+		{
+			"name":"Product",
+			"type":"product",
+			"settings":[
+				{
+					"id":"handle",
+					"type":"text",
+					"label":"Product handle"
+				},
+				{
+					"id":"shipping",
+					"type":"text",
+					"label":"Shipping Notice"
+				},
+				{
+					"id":"desc",
+					"type":"textarea",
+					"label":"Product descripton"
+				},
+				{
+					"id":"stars",
+					"type":"radio",
+					"label":"Star rating",
+					"options":[
+						{
+							"label":"5.0",
+							"value":"five"
+						},
+						{
+							"label":"4.5",
+							"value":"fourHalf"
+						},
+						{
+							"label":"4.0",
+							"value":"four"
+						}
+					],
+					"default":"five"
+				},
+				{
+					"id":"rating",
+					"type":"text",
+					"label":"Product rating"
+				},
+				{
+					"id":"colors",
+					"type":"radio",
+					"label":"Enable color swatches",
+					"options":[
+						{
+							"label":"Yes",
+							"value":"yes"
+						},
+						{
+							"label":"No",
+							"value":"no"
+						}
+					],
+					"default":"yes"
+				},
+				{
+					"id":"title1",
+					"type":"text",
+					"label":"Collapsible 1 title"
+				},
+				{
+					"id":"text1",
+					"type":"html",
+					"label":"Collapsible 1 text",
+					"default":"Collapsible content goes here"
+				},
+				{
+					"id":"title2",
+					"type":"text",
+					"label":"Collapsible 2 title"
+				},
+				{
+					"id":"text2",
+					"type":"html",
+					"label":"Collapsible 2 text",
+					"default":"Collapsible content goes here"
+				},
+				{
+					"id":"title3",
+					"type":"text",
+					"label":"Collapsible 3 title"
+				},
+				{
+					"id":"text3",
+					"type":"html",
+					"label":"Collapsible 3 text",
+					"default":"Collapsible content goes here"
+				},
+				{
+					"id":"title4",
+					"type":"text",
+					"label":"Collapsible 4 title"
+				},
+				{
+					"id":"text4",
+					"type":"html",
+					"label":"Collapsible 4 text",
+					"default":"Collapsible content goes here"
+				},
+				{
+					"id":"title5",
+					"type":"text",
+					"label":"Collapsible 5 title"
+				},
+				{
+					"id":"text5",
+					"type":"html",
+					"label":"Collapsible 5 text",
+					"default":"Collapsible content goes here"
+				},
+				{
+					"id":"title6",
+					"type":"text",
+					"label":"Collapsible 6 title"
+				},
+				{
+					"id":"text6",
+					"type":"html",
+					"label":"Collapsible 6 text",
+					"default":"Collapsible content goes here"
+				}
+			]
+		}
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+
+{% endjavascript %}
