@@ -191,40 +191,48 @@
 
 {% if block.settings.colors == 'yes' %}
 <script>
-  
-  $('label').click(function() { 
+  $(document).ready(function() {
+    $("label").click(function() {
 
-    var color = $(this).attr('for');
-    var vid ='';    
-    
-    {% for variant in product.variants %}  
-    {% if variant.available %}
-    if (color == {{variant.id}}){
-        var vid = {{variant.id}};
-        var variantImagePos = "{{ variant.featured_image.position | minus: 1}}";
-        var title = "{{ variant.title }}";
-    }
-    {% endif %}
-    {% endfor %}
-    
-    if(vid == color){
-      
-	document.getElementById('product-select').value = color;
-    $('.sn-product-images').slick('slickGoTo', variantImagePos); 
-    document.getElementById('selected-color').innerHTML = title;
-    history.pushState(null, null, '/products/{{ product.handle }}?variant=' + color);
-    document.getElementById('submit-btn').innerHTML = "Order Now";
-    document.getElementById('submit-btn').removeAttribute("disabled", "");
-    }
-    if (vid == ''){
-    document.getElementById('submit-btn').innerHTML = "Unavailable";
-    $('.sn-product-images').slick('slickGoTo', variantImagePos); 
-    document.getElementById('selected-color').innerHTML = 'Unavailable';
-    document.getElementById('submit-btn').setAttribute("disabled", "");
+      //             code
+
+      var color = $(this).attr('for');
+      var vid ='';
+      console.log(color);
+
+      document.getElementById('product-select').value = color;
+
+      '{% for variant in product.variants %}'  
+      '{% if variant.available %}'
+      if (color == '{{variant.id}}'){
+          var vid = '{{variant.id}}';
+          var variantImagePos = '{{ variant.featured_image.position | minus: 1}}';
+          var title = '{{ variant.title }}';
+          }
+          '{% endif %}'
+          '{% endfor %}'
+
+          console.log(vid);
+// if variant is avaiable
+      if(vid == color){
+        document.getElementById('product-select').value = color;
+        $('.sn-product-images').slick('slickGoTo', variantImagePos); 
+        document.getElementById('selected-color').innerHTML = title;
+        document.getElementById('submit-btn').innerHTML = "Order Now";
+        document.getElementById('submit-btn').removeAttribute("disabled", "");
+      } 
+// if variant is unavailable
+      if(vid == ''){
+        document.getElementById('submit-btn').innerHTML = "Unavailable";
+        $('.sn-product-images').slick('slickGoTo', variantImagePos); 
+        document.getElementById('selected-color').innerHTML = 'Unavailable';
+        document.getElementById('submit-btn').setAttribute("disabled", "");
+      }
+      //             code
+
     });
-                      
+  });
 </script>
-
 {% elsif block.settings.colors == 'no' %}
 
 <script>
